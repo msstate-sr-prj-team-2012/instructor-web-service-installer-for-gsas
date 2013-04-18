@@ -1,0 +1,209 @@
+<component>
+    <name>adminaccountregistry</name>
+    <description>Admin Account Registry</description>
+    <canBeEdited>0</canBeEdited>
+    <selected>1</selected>
+    <show>0</show>
+
+    <parameterList>
+        <parameterGroup>
+            <title>General Configuration</title>
+            <name>generalconfig</name>
+            <description>Configure OnPar</description>
+            <preShowPageActionList>
+                <!-- <setInstallerVariable name="component(adminaccountregistry).parameter(generalconfig).parameter(base_user).default" value=""/>
+                <setInstallerVariable name="component(adminaccountregistry).parameter(generalconfig).parameter(base_user_name).default" value=""/>
+                <setInstallerVariable name="component(adminaccountregistry).parameter(generalconfig).parameter(base_mail).default" value=""/>
+                <iniFileGet>
+                    <file>${installdir}/properties.ini</file>
+                    <section>General</section>
+                    <key>user</key>
+                    <variable>base_user</variable>
+                </iniFileGet>
+                <iniFileGet>
+                    <file>${installdir}/properties.ini</file>
+                    <section>General</section>
+                    <key>user_name</key>
+                    <variable>base_user_name</variable>
+                </iniFileGet>
+                <iniFileGet>
+                    <file>${installdir}/properties.ini</file>
+                    <section>General</section>
+                    <key>mail</key>
+                    <variable>base_mail</variable>
+                </iniFileGet>
+                <setInstallerVariable>
+                    <name>component(adminaccountregistry).parameter(generalconfig).parameter(base_user).ask</name>
+                    <value>0</value>
+                    <ruleList>
+                        <compareText text="${base_user}" logic="does_not_equal" value=""/>
+                    </ruleList>
+                </setInstallerVariable>
+                <setInstallerVariable>
+                    <name>component(adminaccountregistry).parameter(generalconfig).parameter(base_user_name).ask</name>
+                    <value>0</value>
+                    <ruleList>
+                        <compareText text="${base_user_name}" logic="does_not_equal" value=""/>
+                    </ruleList>
+                </setInstallerVariable>
+                <setInstallerVariable>
+                    <name>component(adminaccountregistry).parameter(generalconfig).parameter(base_mail).ask</name>
+                    <value>0</value>
+                    <ruleList>
+                        <compareText text="${base_mail}" logic="does_not_equal" value=""/>
+                    </ruleList>
+                </setInstallerVariable>
+                <setInstallerVariable>
+                    <name>component(adminaccountregistry).parameter(generalconfig).parameter(base_user).default</name>
+                    <value>user</value>
+                    <ruleList>
+                        <compareText text="${component(adminaccountregistry).parameter(generalconfig).parameter(base_user).default}" logic="equals" value=""/>
+                    </ruleList>
+                </setInstallerVariable>
+                <setInstallerVariable>
+                    <name>component(adminaccountregistry).parameter(generalconfig).parameter(base_user_name).default</name>
+                    <value>User Name</value>
+                    <ruleList>
+                        <compareText text="${component(adminaccountregistry).parameter(generalconfig).parameter(base_user_name).default}" logic="equals" value=""/>
+                    </ruleList>
+                </setInstallerVariable>
+                <setInstallerVariable>
+                    <name>component(adminaccountregistry).parameter(generalconfig).parameter(base_mail).default</name>
+                    <value>user@example.com</value>
+                    <ruleList>
+                        <compareText text="${component(adminaccountregistry).parameter(generalconfig).parameter(base_mail).default}" logic="equals" value=""/>
+                    </ruleList>
+                </setInstallerVariable> -->
+                <setInstallerVariable>
+                    <name>component(adminaccountregistry).parameter(generalconfig).parameter(base_password).explanation</name>
+                    <value>Please enter the existing MySQL password for ${bitnami_platform_name}</value>
+                </setInstallerVariable>
+            </preShowPageActionList>
+            <parameterList>
+                <!-- <stringParameter>
+                    <name>base_user</name>
+                    <default>user</default>
+                    <value>user</value>
+                    <description>Login</description>
+                    <allowEmptyValue>0</allowEmptyValue>
+                    <ask>1</ask>
+                </stringParameter>
+                <stringParameter>
+                    <name>base_user_name</name>
+                    <default>User Name</default>
+                    <ask>1</ask>
+                    <value>User Name</value>
+                    <description>Your real name</description>
+                    <allowEmptyValue>0</allowEmptyValue>
+                </stringParameter>
+                <stringParameter>
+                    <name>base_mail</name>
+                    <default>mail@example.com</default>
+                    <value>mail@example.com</value>
+                    <ask>1</ask>
+                    <description>Email Address</description>
+                    <allowEmptyValue>0</allowEmptyValue>
+                </stringParameter> -->
+                <passwordParameter>
+                    <name>base_password</name>
+                    <default></default>
+                    <value></value>
+                    <explanation>Please enter the existing MySQL password for ${bitnami_platform_name}</explanation>
+                    <description>Password</description>
+                    <askForConfirmation>0</askForConfirmation>
+                    <ask>1</ask>
+                    <validationActionList>
+                        <throwError>
+                            <text>Please enter a password</text>	
+                            <ruleList>
+                                <compareText text="${base_password}" logic="equals" value=""/>
+                            </ruleList>
+                        </throwError>
+                    </validationActionList>
+                </passwordParameter>
+            </parameterList>
+            <!-- <validationActionList>
+                <throwError>
+                    <text>Login and password must not be the same</text>
+                    <ruleList>
+                        <compareText text="${base_user}" logic="equals" value="${base_password}"/>
+                    </ruleList>
+                </throwError>
+                <throwError>
+                    <text>Login must not have capital letters</text>
+                    <ruleList>
+                        <regExMatch text="${base_user}" pattern="[A-Z]"/>
+                    </ruleList>
+                </throwError>
+            </validationActionList> -->
+            <validationActionList>
+                <actionGroup>
+                    <abortOnError>0</abortOnError>
+                    <showMessageOnError>0</showMessageOnError>
+                    <actionList>
+                        <setInstallerVariable name="mysql_wrong_password" value="yes"/>
+                        <runProgram>
+                            <program>${database_root_directory}/bin/mysql</program>
+                            <programArguments>-u root --password="${base_password}" -P${database_port} -hlocalhost -e "show databases;"</programArguments>
+                            <ruleList>
+                                <platformTest type="unix" />
+                            </ruleList>
+                        </runProgram>
+                        <runProgram>
+                            <program>${database_root_directory}/bin/mysql.exe</program>
+                            <programArguments>-u root --password=${base_password} -P${database_port} -hlocalhost -e "show databases;"</programArguments>
+                            <ruleList>
+                                <platformTest type="windows" />
+                            </ruleList>
+                        </runProgram>
+                        <setInstallerVariable name="mysql_wrong_password" value="no"/>
+                    </actionList>
+                </actionGroup>
+                <throwError>
+                    <text>The installer was not able to connect to the MySQL server. Please make sure MySQL is running.</text>
+                    <ruleList>
+                        <portTest port="${database_port}" condition="can_bind"/>
+                    </ruleList>
+                </throwError>
+                <throwError>
+                    <text>Please introduce a valid password to connect to the MySQL server.</text>
+                    <ruleList>
+                        <compareText text="${mysql_wrong_password}" logic="equals" value="yes"/>
+                    </ruleList>
+                </throwError>
+            </validationActionList>
+        </parameterGroup>
+    </parameterList>
+
+    <readyToInstallActionList>
+        <setInstallerVariable name="database_root_password" value="${base_password}"/>
+        <md5 variable="md5_password" text="${base_password}"/>
+        <!-- <iniFileSet>
+            <file>${installdir}/properties.ini</file>
+            <section>General</section>
+            <key>user</key>
+            <value>${base_user}</value>
+            <ruleList>
+                <compareText text="${component(adminaccountregistry).parameter(generalconfig).parameter(base_user).ask}" logic="equals" value="1"/>
+            </ruleList>
+        </iniFileSet>        
+        <iniFileSet>
+            <file>${installdir}/properties.ini</file>
+            <section>General</section>
+            <key>user_name</key>
+            <value>${base_user_name}</value>
+            <ruleList>
+                <compareText text="${component(adminaccountregistry).parameter(generalconfig).parameter(base_user_name).ask}" logic="equals" value="1"/>
+            </ruleList>
+        </iniFileSet>        
+        <iniFileSet>
+            <file>${installdir}/properties.ini</file>
+            <section>General</section>
+            <key>mail</key>
+            <value>${base_mail}</value>
+            <ruleList>
+                <compareText text="${component(adminaccountregistry).parameter(generalconfig).parameter(base_mail).ask}" logic="equals" value="1"/>
+            </ruleList>
+        </iniFileSet> -->      
+    </readyToInstallActionList>
+</component>

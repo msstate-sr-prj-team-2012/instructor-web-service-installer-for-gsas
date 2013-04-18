@@ -1,0 +1,182 @@
+<component>
+    <name>basegetproperties</name>
+    <description>Base Get Properties</description>
+    <canBeEdited>0</canBeEdited>
+    <show>0</show>
+    <selected>1</selected>
+
+    <initializationActionList>
+        <setInstallerVariable>
+            <name>bitnami_platform_name</name>
+            <value>BitNami LAMPStack</value>
+            <ruleList>
+                <platformTest type="linux"/>
+            </ruleList>
+        </setInstallerVariable>
+        <setInstallerVariable>
+            <name>bitnami_platform_name</name>
+            <value>BitNami MAMPStack</value>
+            <ruleList>
+                <platformTest type="osx"/>
+            </ruleList>
+        </setInstallerVariable>
+        <setInstallerVariable>
+            <name>bitnami_platform_name</name>
+            <value>BitNami WAMPStack</value>
+            <ruleList>
+                <platformTest type="windows"/>
+            </ruleList>
+        </setInstallerVariable>
+        <setInstallerVariable>
+            <name>bitnami_platform_name</name>
+            <value>BitNami SAMPStack</value>
+            <ruleList>
+                <platformTest type="solaris"/>
+            </ruleList>
+        </setInstallerVariable>
+    </initializationActionList>
+
+    <parameterList>
+        <stringParameter>
+            <name>bitnami_platform_name</name>
+            <title></title>
+            <description>Full name of the platform in which the module will be installed</description>
+            <explanation></explanation>
+            <default></default>
+            <value></value>
+            <ask>0</ask>
+        </stringParameter>
+        <directoryParameter>
+            <name>installdir</name>
+            <title>Installation folder</title>
+            <description>Select a folder</description>
+            <explanation>Please choose a folder that contains an installation of ${bitnami_platform_name}.</explanation>
+            <default></default>
+            <mustBeWritable>1</mustBeWritable>
+            <mustExist>1</mustExist>
+            <allowEmptyValue>0</allowEmptyValue>
+            <cliOptionName>prefix</cliOptionName>
+            <insertAfter>components</insertAfter>
+            <width>32</width>
+            <validationActionList>
+                <throwError>
+                    <text>That folder does not seem to contain a valid installation of ${bitnami_platform_name}. The file properties.ini is missing.</text>
+                    <ruleEvaluationLogic>or</ruleEvaluationLogic>
+                    <ruleList>
+                        <fileTest path="${installdir}/properties.ini" condition="not_exists"/>
+                    </ruleList>
+                </throwError>
+            </validationActionList>
+            <postShowPageActionList>
+                <actionGroup>
+                    <actionList>
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>General</section>
+                            <key>base_stack_name</key>
+                            <variable>stack_name</variable>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>General</section>
+                            <key>base_stack_version</key>
+                            <variable>stack_version</variable>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>Apache</section>
+                            <key>apache_server_port</key>
+                            <variable>web_server_port</variable>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>Apache</section>
+                            <key>apache_server_ssl_port</key>
+                            <variable>web_server_sslport</variable>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>Apache</section>
+                            <key>apache_root_directory</key>
+                            <variable>web_server_directory</variable>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>Apache</section>
+                            <key>apache_domainname</key>
+                            <variable>web_server_domain_name</variable>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>Apache</section>
+                            <key>apache_configuration_directory</key>
+                            <variable>web_server_configuration_directory</variable>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>Apache</section>
+                            <key>apache_unique_service_name</key>
+                            <variable>apache_unique_service_name</variable>
+                            <ruleList>
+                                <platformTest type="windows"/>
+                            </ruleList>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>MySQL</section>
+                            <key>mysql_port</key>
+                            <variable>database_port</variable>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>MySQL</section>
+                            <key>mysql_root_directory</key>
+                            <variable>database_root_directory</variable>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>MySQL</section>
+                            <key>mysql_binary_directory</key>
+                            <variable>database_binary_directory</variable>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>MySQL</section>
+                            <key>mysql_arguments</key>
+                            <variable>database_arguments</variable>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>MySQL</section>
+                            <key>mysql_unique_service_name</key>
+                            <variable>mysql_unique_service_name</variable>
+                            <ruleList>
+                                <platformTest type="windows"/>
+                            </ruleList>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>PHP</section>
+                            <key>php_configuration_directory</key>
+                            <variable>php_configuration_directory</variable>
+                        </iniFileGet>        
+                        <iniFileGet>
+                            <file>${installdir}/properties.ini</file>
+                            <section>PHP</section>
+                            <key>php_binary_directory</key>
+                            <variable>php_binary_directory</variable>
+                        </iniFileGet>        
+                    </actionList>
+                </actionGroup>
+            </postShowPageActionList>
+        </directoryParameter>
+    </parameterList>
+    <readyToInstallActionList>
+        <generateRandomValue>
+            <variable>database_password</variable>
+            <length>10</length>
+        </generateRandomValue>
+        <setInstallerVariable name="database_user" value="bn_${module_url}"/>
+        <setInstallerVariable name="database_hostname" value="localhost"/>
+    </readyToInstallActionList>
+</component>

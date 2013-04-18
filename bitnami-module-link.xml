@@ -1,0 +1,63 @@
+<component>
+    <name>bitnamimodulelink</name>
+    <description>BitNami Module Link</description>
+    <canBeEdited>0</canBeEdited>
+    <selected>1</selected>
+    <show>0</show>
+    <folderList>
+        <folder>
+            <description>Program Files</description>
+            <destination>${installdir}/apache2/htdocs/img</destination>
+            <name>programfiles</name>
+            <platforms>all</platforms>
+            <distributionFileList>
+                <distributionFile origin="images/${project.shortName}-module.png"/>
+            </distributionFileList>            
+        </folder>
+    </folderList>
+    <postInstallationActionList>
+        <substitute>
+            <files>${installdir}/apache2/htdocs/applications.html</files>
+            <substitutionList>
+                <substitution>
+                    <pattern>&lt;!-- @@BITNAMI_MODULE_PLACEHOLDER@@ --&gt;</pattern>
+                    <value>&lt;!-- START ${project.fullName} ${module_url} --&gt;
+        &lt;div align="center" class="module_table"&gt;
+         &lt;table cellpadding="0" cellspacing="0" &gt;
+          &lt;tr&gt;&lt;td class="module_top"&gt;&lt;img src="img/module_table_top.png" alt=""&gt;&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;
+          &lt;td class="module_content" valign="top"&gt; 
+            &lt;table cellpadding="0" cellspacing="0"&gt;
+              &lt;tr&gt;
+                &lt;td valign="top"&gt;
+                &lt;img src="img/${project.shortName}-module.png" alt=""&gt;
+                &lt;/td&gt;
+                &lt;td valign="top"&gt;
+                &lt;h2&gt;${project.fullName}&lt;/h2&gt;
+                &lt;p&gt;${module_description}&lt;/p&gt;
+                &lt;div align="right" class="module_access"&gt;&lt;a href="/${module_url}"&gt;Access&lt;/a&gt;&lt;/div&gt;
+                &lt;/td&gt;
+              &lt;/tr&gt;
+            &lt;/table&gt;
+          &lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+          &lt;td class="module_bottom"&gt; 
+          &lt;img src="img/module_table_bottom.png" alt=""&gt;
+          &lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;/table&gt;
+        &lt;/div&gt;
+        &lt;!-- END ${project.fullName} ${module_url} --&gt;
+        &lt;!-- @@BITNAMI_MODULE_PLACEHOLDER@@ --&gt;</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+        <removeFilesFromUninstaller files="${installdir}/apache2/htdocs/img/${project.shortName}-module.png"/>
+    </postInstallationActionList>
+    <postUninstallationActionList>
+        <readFile name="applications_html_file" path="${installdir}/apache2/htdocs/applications.html"/>
+        <setInstallerVariableFromRegEx text="${applications_html_file}" substitution="\1\3" name="applications_html_file" pattern="(.*)(&lt;!-- START ${project.fullName} ${module_url} .*END ${project.fullName} ${module_url} --&gt;)(.*)$"/>
+        <writeFile path="${installdir}/apache2/htdocs/applications.html" text="${applications_html_file}"/>
+    </postUninstallationActionList>
+</component>

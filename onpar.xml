@@ -1,0 +1,119 @@
+<component>
+    <name>onpar</name>
+    <description>OnPar</description>
+    <detailedDescription>OnPar allows students to record shots and instructors to see paths to see how well students golf.</detailedDescription>
+    <canBeEdited>0</canBeEdited>
+    <selected>1</selected>
+    <show>1</show>
+
+    <readyToInstallActionList>
+        <setInstallerVariable name="onpar_database_name" value="gsas" persist="1"/>
+		<setInstallerVariable name="database_user" value="gsas" persist="1"/>
+		<setInstallerVariable name="database_password" value="pQMzSYAp" persist="1"/>
+        <setInstallerVariable name="onpar_installation_directory" value="${installdir}/apps/onpar" persist="1"/>
+		<setInstallerVariable name="onpar_database_schema" value="${onpar_installation_directory}/scripts/gsas.sql" persist="1"/>
+        <showQuestion>
+            <text>The installer detected that the installation folder ${onpar_installation_directory} is not empty. Please make sure that any older version of the application is uninstalled, as continuing with the installation may corrupt the current one. Do you want to continue?</text>
+            <variable>continue_installation</variable>
+            <ruleList>
+                <fileTest path="${onpar_installation_directory}" condition="is_not_empty"/>
+            </ruleList>
+        </showQuestion>
+        <exit>
+            <ruleList>
+                <compareText text="${continue_installation}" value="no"/>
+            </ruleList>
+        </exit>
+        <setInstallerVariable name="onpar_site_url" value="http://${onpar_site}:${web_server_port}/onpar/"/>
+        <setInstallerVariable name="onpar_site_url" value="http://${onpar_site}/onpar/">
+            <ruleList>
+                <compareText text="${web_server_port}" logic="equals" value="80"/>
+            </ruleList>
+        </setInstallerVariable>
+    </readyToInstallActionList>
+    <folderList>
+        <folder>
+            <description>Program Files</description>
+            <destination>${installdir}/apps</destination>
+            <name>programfiles</name>
+            <platforms>all</platforms>
+            <distributionFileList>
+                <distributionDirectory origin="onpar"/>
+            </distributionFileList>            
+
+            <actionList>
+                <substitute>
+                    <files>${onpar_installation_directory}/conf/*;${onpar_installation_directory}/scripts/*</files>
+                    <substitutionList>
+                        <substitution pattern="@@BITNAMI_DATABASE_USER@@" value="${database_user}"/>
+                        <substitution pattern="@@BITNAMI_DATABASE_PASSWORD@@" value="${database_password}"/>
+                        <substitution pattern="@@BITNAMI_DATABASE_ROOT_PASSWORD@@" value="${database_root_password}"/>
+                        <substitution pattern="@@BITNAMI_DATABASE_HOST@@" value="${database_hostname}"/>
+                        <substitution pattern="@@BITNAMI_DATABASE_PORT@@" value="${database_port}"/>
+                        <substitution pattern="@@BITNAMI_DATABASE_NAME@@" value="${onpar_database_name}"/>
+						<substitution pattern="@@BITNAMI_DATABASE_SCHEMA@@" value="${onpar_database_schema}"/>
+                        <substitution pattern="@@BITNAMI_MD5_PASSWORD@@" value="${md5_password}"/>
+						<substitution pattern="@@BITNAMI_UNHASHED_PASSWORD@@" value="${base_password}"/>
+                        <substitution pattern="@@BITNAMI_INSTALLATION_DIRECTORY@@" value="${onpar_installation_directory.unix}/htdocs"/>
+                        <substitution pattern="@@BITNAMI_ONPAR_HOME@@" value="${onpar_site_url}"/>
+                        <substitution pattern="@@BITNAMI_ONPAR_SITE_URL@@" value="${onpar_site_url}"/>
+                    </substitutionList>
+                </substitute>
+            </actionList>
+        </folder>
+    </folderList>
+    <postInstallationActionList>
+        <runProgram>
+            <program>${php_binary_directory}/php</program>
+            <programArguments>-c "${php_configuration_directory}" "${onpar_installation_directory.unix}/scripts/createdb.php"</programArguments>
+            <ruleList>
+                <platformTest type="unix"/>
+            </ruleList>
+        </runProgram>
+        <runProgram>
+            <program>${php_binary_directory}/php.exe</program>
+            <programArguments>-c "${php_configuration_directory}" "${onpar_installation_directory.dos}\scripts\createdb.php"</programArguments>
+            <ruleList>
+                <platformTest type="windows"/>
+            </ruleList>
+        </runProgram>
+        <addTextToFile>
+            <file>${web_server_configuration_directory}/httpd.conf</file>
+            <text>Include "${onpar_installation_directory.unix}/conf/onpar.conf"
+            </text>
+            <ruleList>
+                <fileContentTest path="${web_server_configuration_directory.unix}/httpd.conf" logic="does_not_contain" text="${onpar_installation_directory.unix}/conf/onpar.conf"/>
+            </ruleList>
+        </addTextToFile>
+        <actionGroup>
+            <actionList>
+                <runProgram>
+                    <program>${installdir}/ctlscript.sh</program>
+                    <programArguments>restart apache</programArguments>
+                </runProgram>
+                <waitForPort port="${web_server_port}" timeout="10000"/>
+            </actionList>
+            <ruleList>
+                <platformTest type="unix"/>
+            </ruleList>
+        </actionGroup>
+
+        <actionGroup>
+            <actionList>
+                <runProgram>
+                    <program>cmd.exe</program>
+                    <programArguments>/C start /MIN net stop ${apache_unique_service_name}</programArguments>
+                </runProgram>
+                <waitForPort port="${web_server_port}" timeout="10000"/>
+                <runProgram>
+                    <program>cmd.exe</program>
+                    <programArguments>/C start /MIN net start ${apache_unique_service_name}</programArguments>
+                </runProgram>
+                <waitForPort port="${web_server_port}" timeout="10000"/>
+            </actionList>
+            <ruleList>
+                <platformTest type="windows"/>
+            </ruleList>
+        </actionGroup>
+    </postInstallationActionList>
+</component>

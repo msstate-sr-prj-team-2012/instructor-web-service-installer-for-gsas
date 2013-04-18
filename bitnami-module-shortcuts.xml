@@ -1,0 +1,47 @@
+<component>
+    <name>shortcuts</name>
+    <description>Bitnami Modules Shortcuts</description>
+    <canBeEdited>0</canBeEdited>
+    <selected>1</selected>
+    <show>0</show>
+    <parameterList>
+        <stringParameter>
+            <name>application_icon_path</name>
+            <default>img/onpar-logo.ico</default>
+            <value>img/onpar-logo.ico</value>
+            <ask>0</ask>
+        </stringParameter>
+    </parameterList>
+    <folderList>
+        <folder>
+            <description>Shortcuts Images</description>
+            <destination>${installdir}</destination>
+            <name>bitnami_images</name>
+            <distributionFileList>
+                <distributionDirectory origin="img"/>
+            </distributionFileList>
+        </folder>
+        <folder>
+            <name>shortcuts</name>
+            <description>Shortcuts</description>
+            <destination>${windows_folder_common_programs}/BitNami/Applications/${product_fullname}</destination>
+            <platforms>windows</platforms>
+            <shortcutList>
+                <shortcut>
+                    <comment>Launch ${product_fullname}</comment>
+                    <name>Launch ${product_fullname}</name>
+                    <windowsExec>http://${web_server_domain_name}:${web_server_port}/${module_url}/</windowsExec>
+                    <windowsIcon></windowsIcon>
+                </shortcut> 
+                <shortcut>
+                    <comment>Uninstall ${product_fullname}</comment>
+                    <name>Uninstall ${product_fullname}</name>
+                    <windowsExec>${project.uninstallerDirectory}\uninstall.exe</windowsExec>
+                    <windowsExecArgs></windowsExecArgs>
+                    <windowsIcon></windowsIcon>
+                    <windowsPath>${installdir}</windowsPath>
+                </shortcut>
+            </shortcutList>
+        </folder>
+    </folderList>
+</component>

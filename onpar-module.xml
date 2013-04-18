@@ -1,0 +1,87 @@
+<project>
+    <fullName>OnPar</fullName>
+    <shortName>onpar</shortName>
+    <version>0.9.0-0</version>
+	<vendor>Mississippi State University</vendor>
+    <compressionAlgorithm>lzma</compressionAlgorithm>
+    <installerFilename>bitnami-${product_shortname}-${product_version}-module-${platform_name}-installer.${platform_exec_suffix}</installerFilename>
+    <enableRollback>0</enableRollback>
+    <logoImage>images/logo2-small.png</logoImage> 
+    <splashImage>img/onpar-logosplash.png</splashImage> 
+    <uninstallerDirectory>${onpar_installation_directory}</uninstallerDirectory>
+    <leftImage>images/logo3.png</leftImage>
+	<licenseFile>extrafiles/gplwithapache2license.txt</licenseFile>
+    <slideShowLoop>no</slideShowLoop>
+    <slideShowImageList>
+        <slideShowImage path="images/logosplash.png"/>
+    </slideShowImageList>
+    <componentList>
+        <include file="base-get-installdir.xml"/>
+        <include file="base-adminaccount-registry.xml"/>
+        <include file="onpar.xml"/>
+        <include file="bitnami-module-shortcuts.xml"/>
+        <include file="bitnami-module-link.xml"/>
+    </componentList>
+    <readyToInstallActionList>
+        <setInstallerVariable name="module_url" value="onpar" persist="1"/>
+        <setInstallerVariable name="module_description" value="${component(onpar).detailedDescription}" persist="1"/>
+    </readyToInstallActionList>
+    <finalPageActionList>
+        <actionGroup>
+            <progressText>Launch ${product_fullname}</progressText>
+            <actionList>
+                <launchBrowser>
+                    <url>http://${web_server_domain_name}:${web_server_port}/onpar</url>
+                </launchBrowser>	
+            </actionList>
+        </actionGroup>
+    </finalPageActionList>
+    <preUninstallationActionList>
+        <showQuestion>
+            <text>Do you want to keep the OnPar database? It will be saved at ${installdir}/backups</text>
+            <variable>confirm_keep</variable>
+        </showQuestion>
+        <actionGroup>
+            <actionList>
+                <createDirectory path="${installdir}/backups">
+                    <ruleList>
+                        <fileTest path="${installdir}/backups" condition="not_exists"/>
+                    </ruleList>
+                </createDirectory>
+                <createBackupFile path="${installdir}/mysql/data/${onpar_database_name}" destination="${installdir}/backups"/>
+            </actionList>
+            <ruleList>
+                <compareText text="${confirm_keep}" logic="equals" value="yes"/>
+            </ruleList>
+        </actionGroup>
+        <runProgram>
+            <program>${installdir}/mysql/bin/mysql</program>
+            <programArguments>-u root -p${base_password} -e "drop database ${onpar_database_name}"</programArguments>
+            <ruleList>
+                <platformTest type="unix"/>
+            </ruleList>
+        </runProgram>
+        <runProgram>
+            <program>${installdir}/mysql/bin/mysql.exe</program>
+            <programArguments>-u root -p${base_password} -e "drop database ${onpar_database_name}"</programArguments>
+            <ruleList>
+                <platformTest type="windows"/>
+            </ruleList>
+        </runProgram>
+        <readFile path="${installdir}/apache2/conf/httpd.conf" name="apache_configuration_file"/>
+        <setInstallerVariableFromRegEx>
+            <text>${apache_configuration_file}</text>
+            <name>apache_configuration_file</name>
+            <pattern>Include "${onpar_installation_directory.unix}/conf/onpar.conf"</pattern>
+            <substitution></substitution>
+        </setInstallerVariableFromRegEx>
+        <writeFile path="${installdir}/apache2/conf/httpd.conf" text="${apache_configuration_file}"/>
+    </preUninstallationActionList>
+
+    <postUninstallationActionList>
+        <deleteFile>
+            <abortOnError>0</abortOnError>
+            <path>${onpar_installation_directory}</path>
+        </deleteFile>
+    </postUninstallationActionList>
+</project>
